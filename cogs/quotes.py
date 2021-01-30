@@ -79,13 +79,14 @@ class QuotesCog(commands.Cog, name='quotes'):
                 if quotes[name][x] == quote:
                     quotes[name].pop(x)
                     await ctx.send("Removed the quote")
+                    file_handler = open('quotes.pkl', 'wb')
+                    pickle.dump(quotes, file_handler)
+                    file_handler.close()
                     return
             await ctx.send("Can't find that quote")
         except KeyError:
             await ctx.send("Can't find that user")
-        file_handler = open('quotes.pkl', 'wb')
-        pickle.dump(quotes, file_handler)
-        file_handler.close()
+
 
 
 def setup(bot):
