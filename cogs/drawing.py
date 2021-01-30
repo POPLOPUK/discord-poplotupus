@@ -1,6 +1,6 @@
 from discord.ext import commands
 import pickle
-
+import random
 
 class DrawingsCog(commands.Cog, name='drawings'):
     def __init__(self, bot):
@@ -8,7 +8,7 @@ class DrawingsCog(commands.Cog, name='drawings'):
 
     @commands.command(name="resetdrawings", help="[Admin] Resets drawing file during dev", parent="drawings")
     @commands.has_role("Admin")
-    async def reset_drawings(ctx):
+    async def reset_drawings(self, ctx):
         try:
             file_handler = open('drawings.pkl', 'rb')
             drawings = pickle.load(file_handler)
@@ -20,14 +20,17 @@ class DrawingsCog(commands.Cog, name='drawings'):
             file_handler = open('drawings.pkl', 'wb')
             pickle.dump(drawings, file_handler)
             file_handler.close()
+            await ctx.send("Backup created. Quotes file reset")
         except:
             drawings = {}
             file_handler = open('drawings.pkl', 'wb')
             pickle.dump(drawings, file_handler)
             file_handler.close()
+            await ctx.send("No backup created. Quotes file reset")
+        await ctx.send("Done!")
 
     @commands.command(name="adddrawing", help="adds a drawing to person", parent="drawings")
-    async def add_drawing(ctx, name, link):
+    async def add_drawing(self, ctx, name, link):
         file_handler = open('drawings.pkl', 'rb')
         drawings = pickle.load(file_handler)
         file_handler.close()
@@ -43,7 +46,7 @@ class DrawingsCog(commands.Cog, name='drawings'):
         await ctx.send("to " + name + "'s drawings")
 
     @commands.command(name="drawing", help="quotes of various users in the server", parent="drawings")
-    async def send_drawing(ctx, name):
+    async def send_drawing(self, ctx, name):
         file_handler = open('drawings.pkl', 'rb')
         drawings = pickle.load(file_handler)
         file_handler.close()

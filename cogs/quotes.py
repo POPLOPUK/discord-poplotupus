@@ -1,6 +1,6 @@
 from discord.ext import commands
 import pickle
-
+import random
 
 class QuotesCog(commands.Cog, name='quotes'):
     def __init__(self, bot):
@@ -8,7 +8,7 @@ class QuotesCog(commands.Cog, name='quotes'):
 
     @commands.command(name="resetquotes", help="[Admin] Resets quote file during dev", parent="quotes")
     @commands.has_role("Admin")
-    async def reset_quotes(ctx):
+    async def reset_quotes(self, ctx):
         try:
             file_handler = open('quotes.pkl', 'rb')
             quotes = pickle.load(file_handler)
@@ -30,7 +30,7 @@ class QuotesCog(commands.Cog, name='quotes'):
         await ctx.send("Done!")
 
     @commands.command(name="quote", help="quotes of various users in the server", parent="quotes")
-    async def quote(ctx, name):
+    async def quote(self, ctx, name):
         file_handler = open('quotes.pkl', 'rb')
         quotes = pickle.load(file_handler)
         file_handler.close()
@@ -41,7 +41,7 @@ class QuotesCog(commands.Cog, name='quotes'):
         await ctx.send(msg)
 
     @commands.command(name="addquote", help="adds a quote to person", parent="quotes")
-    async def add_quote(ctx, name, quote):
+    async def add_quote(self, ctx, name, quote):
         file_handler = open('quotes.pkl', 'rb')
         quotes = pickle.load(file_handler)
         file_handler.close()
@@ -56,7 +56,7 @@ class QuotesCog(commands.Cog, name='quotes'):
         await ctx.send("Cool added: \"" + str(quote) + "\" to " + name + "'s quotes")
 
     @commands.command(name="allquotes", help="displays all quotes of a person", parent="quotes")
-    async def diplay_all_quotes(ctx, name):
+    async def diplay_all_quotes(self, ctx, name):
         file_handler = open('quotes.pkl', 'rb')
         quotes = pickle.load(file_handler)
         file_handler.close()
@@ -70,7 +70,7 @@ class QuotesCog(commands.Cog, name='quotes'):
             await ctx.send("That user does not exist")
 
     @commands.command(name="removequote", help="removes  a quote from a person", parent="quotes")
-    async def remove_quote(ctx, name, quote):
+    async def remove_quote(self, ctx, name, quote):
         file_handler = open('quotes.pkl', 'rb')
         quotes = pickle.load(file_handler)
         file_handler.close()

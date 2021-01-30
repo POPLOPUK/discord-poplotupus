@@ -9,6 +9,11 @@ token = open("token.txt", "r").readline()
 bot = commands.Bot(command_prefix="..")
 
 
+
+@bot.event
+async def on_ready():
+    bot.load_extension("cogs.music")
+
 @bot.event
 async def on_command_error(ctx, error):
     if isinstance(error, commands.errors.CheckFailure):
@@ -18,4 +23,5 @@ async def on_command_error(ctx, error):
 
 bot.load_extension("cogs.drawing")
 bot.load_extension("cogs.quotes")
+bot.load_extension("cogs.media")
 bot.run(token)
