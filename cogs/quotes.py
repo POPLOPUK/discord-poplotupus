@@ -2,6 +2,7 @@ from discord.ext import commands
 import pickle
 import random
 
+
 class QuotesCog(commands.Cog, name='quotes'):
     def __init__(self, bot):
         self.bot = bot
@@ -86,7 +87,6 @@ class QuotesCog(commands.Cog, name='quotes'):
             await ctx.send("Can't find that quote")
         except KeyError:
             await ctx.send("Can't find that user")
-
 
 
 def setup(bot):

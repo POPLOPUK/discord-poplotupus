@@ -1,6 +1,7 @@
 from discord.ext import commands
 import pickle
 
+
 class MediaCog(commands.Cog, name='media'):
     def __init__(self, bot):
         self.bot = bot
@@ -62,6 +63,7 @@ class MediaCog(commands.Cog, name='media'):
         media = pickle.load(file_handler)
         file_handler.close()
         await ctx.send(media[media_name.lower()])
+
 
 def setup(bot):
     bot.add_cog(MediaCog(bot))
