@@ -7,7 +7,6 @@ class MediaCog(commands.Cog, name='media'):
         self.bot = bot
 
     @commands.command(name="allmedia", help="[Admin] Resets drawing file during dev", parent="drawings")
-    @commands.has_role("Admin")
     async def display_all_media(self, ctx):
         file_handler = open('media.pkl', 'rb')
         media = pickle.load(file_handler)

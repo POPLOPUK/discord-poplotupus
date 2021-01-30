@@ -127,7 +127,7 @@ class music(commands.Cog):
         except:
             await ctx.channel.send("Nothing playing.")
 
-    @commands.command(name='pause', aliases=["p"],
+    @commands.command(name='pause', aliases=["ps"],
                       description="Pauses a song if one is playing.")  # command to pause currently playing music
     @commands.has_any_role('Starpeople', 'Administrator', 'Starpeople')
     async def pause_bot(self, ctx):
