@@ -17,14 +17,13 @@ class music(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.bot.music = lavalink.Client(self.bot.user.id)
-        self.bot.music.add_node('192.168.0.69', 7000, 'testing', 'na',
+        self.bot.music.add_node('192.168.0.69', 7000, 'testing', 'eu',
                                 'local_music_node')  # PASSWORD HERE MUST MATCH YML
         self.bot.add_listener(self.bot.music.voice_update_handler, 'on_socket_response')
         self.bot.music.add_event_hook(self.track_hook)
 
     @commands.command(name='play', alias=['p'],
                       description=".play {song name} to play a song, will connect the bot.")  # Allows for a song to be played, does not make sure people are in the same chat.
-    @commands.has_any_role('Starpeople', 'Administrator', 'Starpeople')
     async def play_song(self, ctx, *, query):
         member = utils.find(lambda m: m.id == ctx.author.id,
                             ctx.guild.members)  # This will connect the bot if it is not already connected.
@@ -71,7 +70,6 @@ class music(commands.Cog):
 
     @commands.command(name='skip', alias=["s"],
                       description="Skips currently playing song.")  # skips currently playing song
-    @commands.has_any_role('Starpeople', 'Administrator', 'Starpeople')
     async def skip_song(self, ctx, amount=1):
         try:
             player = self.bot.music.player_manager.get(ctx.guild.id)
@@ -92,7 +90,6 @@ class music(commands.Cog):
 
     @commands.command(name="clear",
                       description="Clears all of the currently playing songs and makes the bot disconnect.")
-    @commands.has_any_role("Starpeople", "Starpeople", "Administrator")
     async def clear_queue(self, ctx):
         try:
             player = self.bot.music.player_manager.get(ctx.guild.id)
@@ -111,7 +108,6 @@ class music(commands.Cog):
     # may remove this as it is depricated by clear, a safer alternative.
     @commands.command(name='disconnect', aliases=['dc'],
                       description="Force disconnects the bot from a voice channel")  # bad practice, better to use clear.
-    @commands.has_any_role('Starpeople', 'Administrator', 'Starpeople')
     async def disconnect_bot(self, ctx):
         try:
             player = self.bot.music.player_manager.get(ctx.guild.id)
@@ -129,7 +125,6 @@ class music(commands.Cog):
 
     @commands.command(name='pause', aliases=["ps"],
                       description="Pauses a song if one is playing.")  # command to pause currently playing music
-    @commands.has_any_role('Starpeople', 'Administrator', 'Starpeople')
     async def pause_bot(self, ctx):
         try:
             player = self.bot.music.player_manager.get(ctx.guild.id)
@@ -159,7 +154,6 @@ class music(commands.Cog):
 
     @commands.command(name='unpause', aliases=['resume', 'start', 'up'],
                       description="Unpauses a paused song.")  # command to unpause currently paused music
-    @commands.has_any_role('Starpeople', 'Administrator', 'Starpeople')
     async def unpause_bot(self, ctx):
         try:
             player = self.bot.music.player_manager.get(ctx.guild.id)
@@ -176,7 +170,6 @@ class music(commands.Cog):
 
     @commands.command(name='queue', aliases=['playlist', 'songlist', 'upnext', "q"],
                       description="Shows songs up next in order, with the currently playing at the top.")  # display the songs in the order they are waiting to play
-    @commands.has_any_role('Starpeople', 'Administrator', 'Starpeople')
     async def queue(self, ctx, page=1):
         if not isinstance(page, int):  # Stop here if the page is not a valid number (save processing time).
             return ctx.channel.send("Please enter a valid number.")
@@ -216,7 +209,6 @@ class music(commands.Cog):
             await ctx.channel.send("Nothing is queued.")
 
     @commands.command(name="shuffle", description="Indefinetely shuffles the songs to be played.")
-    @commands.has_any_role("Starpeople", "Starpeople", "Administrator")
     async def shuffle(self, ctx):
         try:
             player = self.bot.music.player_manager.get(ctx.guild.id)
@@ -233,6 +225,7 @@ class music(commands.Cog):
                 await ctx.channel.send("Please join my channel to shuffle.")
         except:
             await ctx.channel.send("Nothing playing.")
+
 
 
 def setup(bot):
