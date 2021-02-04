@@ -29,7 +29,7 @@ class DrawingsCog(commands.Cog, name='drawings'):
             await ctx.send("No backup created. Quotes file reset")
         await ctx.send("Done!")
 
-    @commands.command(name="adddrawing", help="adds a drawing to person", parent="drawings")
+    @commands.command(name="adddrawing", help=".adddrawing [name] [link]. adds a drawing to person", parent="drawings")
     async def add_drawing(self, ctx, name, link):
         file_handler = open('drawings.pkl', 'rb')
         drawings = pickle.load(file_handler)
@@ -45,7 +45,7 @@ class DrawingsCog(commands.Cog, name='drawings'):
         await ctx.send(str(link))
         await ctx.send("to " + name + "'s drawings")
 
-    @commands.command(name="drawing", help="quotes of various users in the server", parent="drawings")
+    @commands.command(name="drawing", help=".drawing [person]. displays a random art by that person", parent="drawings")
     async def send_drawing(self, ctx, name):
         file_handler = open('drawings.pkl', 'rb')
         drawings = pickle.load(file_handler)

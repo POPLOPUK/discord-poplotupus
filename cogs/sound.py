@@ -46,7 +46,7 @@ class SoundMediaCog(commands.Cog, name='media'):
         await ctx.send(str(link))
         await ctx.send("to " + name + "'s sounds")
 
-    @commands.command(name="sound", help="quotes of various users in the server", parent="drawings")
+    @commands.command(name="sound", help=".sound [name]. Sounds of *slam* ", parent="drawings")
     async def send_sound(self, ctx, name):
         file_handler = open('sounds.pkl', 'rb')
         sounds = pickle.load(file_handler)
@@ -65,6 +65,19 @@ class SoundMediaCog(commands.Cog, name='media'):
         except KeyError:
             msg = "There is not file with that sound"
 
+    @commands.command(name="listsound", help="Displays all the sounds made by --jason-- everyone", parent="drawings")
+    async def display_all_media(self, ctx):
+        file_handler = open('sounds.pkl', 'rb')
+        sound = pickle.load(file_handler)
+        file_handler.close()
+        keys = list(sound.keys())
+        try:
+            msg = ""
+            for x in range(len(keys)):
+                msg = msg + keys[x] + "\n"
+            await ctx.send(msg)
+        except KeyError:
+            await ctx.send("That media does not exist")
 
 def setup(bot):
     bot.add_cog(SoundMediaCog(bot))

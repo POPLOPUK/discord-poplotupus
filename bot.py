@@ -77,6 +77,10 @@ async def on_command_error(ctx, error):
 
 async def custom_cmds(message):
     # legacy code / custom code
+    if message.author.bot:
+        # await message.channel.send('Khavan probably: \"Jay is gay\"')
+        # check if new message is from bot
+        return
     now = datetime.now()
     current_time = now.strftime("%H:%M:%S")
     messageL = message.content.lower()
@@ -121,7 +125,8 @@ async def custom_cmds(message):
 async def reboot(ctx):
     await ctx.channel.send("Rebooting")
     bot.unload_extension("cogs.music")
-    subprocess.call(["python3", "bot2.py"])
+    await ctx.bot.logout()
+    subprocess.call(["python3", "bot.py"])
 
 
 resetProbability()

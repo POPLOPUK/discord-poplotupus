@@ -56,7 +56,7 @@ class QuotesCog(commands.Cog, name='quotes'):
 
         await ctx.send("Cool added: \"" + str(quote) + "\" to " + name + "'s quotes")
 
-    @commands.command(name="allquotes", help="displays all quotes of a person", parent="quotes")
+    @commands.command(name="listquotes", help="displays all quotes of a person", parent="quotes")
     async def diplay_all_quotes(self, ctx, name):
         file_handler = open('quotes.pkl', 'rb')
         quotes = pickle.load(file_handler)
