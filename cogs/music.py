@@ -28,9 +28,8 @@ class music(commands.Cog, ):
     @commands.command(name='play', alias=['p'],
                       help=".play {song name} to play a song, will connect the bot.")  # Allows for a song to be played, does not make sure people are in the same chat.
     async def play_song(self, ctx, *, query):
-        member = utils.find(lambda m: m.id == ctx.author.id,
-                            ctx.guild.members)  # This will connect the bot if it is not already connected.
-        if member is not None and member.voice is not None:
+        member = ctx.author #warning person can call command anywhere.
+        if member.voice is not None:
             vc = member.voice.channel
             player = self.bot.music.player_manager.create(ctx.guild.id, endpoint=str(ctx.guild.region))
             if not player.is_connected:
@@ -60,6 +59,8 @@ class music(commands.Cog, ):
             except Exception as error:
                 print(error)
         else:
+            await ctx.channel.send("member is not none"+str(member is not None))
+            await ctx.channel.send("memmber voice"+str(member.voice is not None))
             await ctx.channel.send("Please connect to a voice chat first.")
 
     async def track_hook(self, event):  # disconnects bot when song list is complete.
