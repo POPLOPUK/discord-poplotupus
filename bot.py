@@ -65,9 +65,13 @@ def resetProbability():
 
 @bot.event
 async def on_ready():
-    bot.load_extension("cogs.music")
     resetProbability()
     print("Bot ready!")
+    try:
+        channelTemp = bot.get_channel(int(open("last.txt", "r").readline()))
+        await channelTemp.send("Bot online")
+    except:
+        pass
 
 
 @bot.event
@@ -126,8 +130,12 @@ async def custom_cmds(message):
 async def reboot(ctx):
     await ctx.channel.send("Rebooting")
     bot.unload_extension("cogs.music")
+    file_handler = open("last.txt", "w")
+    file_handler.writelines(str(ctx.channel.id))
+    file_handler.close()
     await ctx.bot.logout()
     subprocess.call(["python3", "bot.py"])
+
 
 chance = 0
 resetProbability()
@@ -135,6 +143,7 @@ bot.load_extension("cogs.drawing")
 bot.load_extension("cogs.quotes")
 bot.load_extension("cogs.media")
 bot.load_extension("cogs.sound")
+bot.load_extension("cogs.music")
 # bot.load_extension("cogs.utility")
 bot.add_listener(custom_cmds, 'on_message')
 bot.run(token)
