@@ -112,18 +112,19 @@ async def custom_cmds(message):
         await message.channel.send("Without the other")
     # below is shoddy code. look away
     probability = getProbability()
-    if random.randint(1, probability) == 1:
-        await message.channel.send(
-            random_quotes[random.randint(0, len(random_quotes) - 1)].format(str(message.author)[:-5]))
-        resetProbability()
-    else:
-        reduceProbability()
-        if random.randint(1, 400) == 1:
-            if random.randint(1, 2) == 1:
-                await message.add_reaction("🧢")
-            else:
-                await message.add_reaction("🚫")
-                await message.add_reaction("🧢")
+    if message.channel.id != 577213129080045568:
+        if random.randint(1, probability) == 1:
+            await message.channel.send(
+                random_quotes[random.randint(0, len(random_quotes) - 1)].format(str(message.author)[:-5]))
+            resetProbability()
+        else:
+            reduceProbability()
+            if random.randint(1, 400) == 1:
+                if random.randint(1, 2) == 1:
+                    await message.add_reaction("🧢")
+                else:
+                    await message.add_reaction("🚫")
+                    await message.add_reaction("🧢")
 
 
 @bot.command(name="reboot")  # Now only the bot owner can call reboot.
@@ -144,6 +145,6 @@ bot.load_extension("cogs.quotes")
 bot.load_extension("cogs.media")
 bot.load_extension("cogs.sound")
 bot.load_extension("cogs.music")
-# bot.load_extension("cogs.utility")
+bot.load_extension("cogs.utility")
 bot.add_listener(custom_cmds, 'on_message')
 bot.run(token)

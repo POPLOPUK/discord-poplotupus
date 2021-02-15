@@ -32,9 +32,11 @@ class music(commands.Cog, ):
         if member.voice is not None:
             vc = member.voice.channel
             player = self.bot.music.player_manager.create(ctx.guild.id, endpoint=str(ctx.guild.region))
+
             if not player.is_connected:
                 player.store('channel', ctx.channel.id)  # used so we have the ctx.channel usage
                 await self.connect_to(ctx.guild.id, str(vc.id))
+
 
             if player.is_connected and not ctx.author.voice.channel.id == int(
                     player.channel_id):  # Make sure the person is in the same channel as the bot to add to queue.
@@ -52,6 +54,7 @@ class music(commands.Cog, ):
                     track_title = track["info"]["title"]
                     if not player.is_playing:
                         await player.play()
+                        await player.set_volume(int(90))
                     await ctx.channel.send(f"{track_title} added to queue.")
                 except Exception as error:
                     await ctx.channel.send("Song not found. (or title has emojis/symbols)")
@@ -106,6 +109,14 @@ class music(commands.Cog, ):
                 await ctx.channel.send("Please join the same voice channel as me.")
         except:
             await ctx.channel.send("Nothing playing.")
+
+    @commands.command(name='volume', aliases=['vol'])
+    async def set_volume(self, ctx, volume: int = None):
+        player = self.bot.music.player_manager.get(ctx.guild.id)
+        if not volume:
+            return await ctx.send(f"Current volume: {player.volume}%")#return skips running code below
+        await player.set_volume(int(volume))
+        await ctx.channel.send(f"Volume set to {volume}%")
 
     # may remove this as it is depricated by clear, a safer alternative.
     @commands.command(name='disconnect', aliases=['dc'],
