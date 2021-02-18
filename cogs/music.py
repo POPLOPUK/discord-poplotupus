@@ -1,6 +1,6 @@
 from discord.ext import commands
 import lavalink
-from discord import utils
+import discord
 from discord import Embed
 import re
 import asyncio
@@ -8,35 +8,35 @@ import asyncio
 url_rx = re.compile(r'https?://(?:www\.)?.+')
 
 """
-Robert A. USF Computer Science
-A cog to hold all of the functions used to play music for the bot.
+Implemented bit of code from: https://github.com/Devoxin/Lavalink.py/blob/master/examples/music.py
 """
 
 
-class music(commands.Cog, ):
+class Music(commands.Cog, ):
     def __init__(self, bot):
         self.bot = bot
 
     @commands.Cog.listener()
     async def on_ready(self):
-        self.bot.music = lavalink.Client(self.bot.user.id)
-        self.bot.music.add_node('192.168.0.69', 7000, 'testing', 'eu',
-                                'local_music_node')  # PASSWORD HERE MUST MATCH YML
-        self.bot.add_listener(self.bot.music.voice_update_handler, 'on_socket_response')
+        if not hasattr(self.bot, 'lavalink'):
+            self.bot.music = lavalink.Client(self.bot.user.id)
+            self.bot.music.add_node('127.0.0.1', 7000, 'testing', 'eu',
+                                    'local_music_node')  # PASSWORD HERE MUST MATCH YML
+            self.bot.add_listener(self.bot.music.voice_update_handler, 'on_socket_response')
         self.bot.music.add_event_hook(self.track_hook)
 
     @commands.command(name='play', alias=['p'],
-                      help=".play {song name} to play a song, will connect the bot.")  # Allows for a song to be played, does not make sure people are in the same chat.
-    async def play_song(self, ctx, *, query):
-        member = ctx.author #warning person can call command anywhere.
+                      help=".play {song name} to play a song, will connect the bot.")  # Allows for a song to be
+    # played, does not make sure people are in the same chat.
+    async def play_song(self, ctx, *, query: str):
+        member = ctx.author  # warning person can call command anywhere.
         if member.voice is not None:
             vc = member.voice.channel
-            player = self.bot.music.player_manager.create(ctx.guild.id, endpoint=str(ctx.guild.region))
+            player = self.bot.music.player_manager.create(ctx.guild.id)
 
             if not player.is_connected:
                 player.store('channel', ctx.channel.id)  # used so we have the ctx.channel usage
                 await self.connect_to(ctx.guild.id, str(vc.id))
-
 
             if player.is_connected and not ctx.author.voice.channel.id == int(
                     player.channel_id):  # Make sure the person is in the same channel as the bot to add to queue.
@@ -48,6 +48,36 @@ class music(commands.Cog, ):
                     query = f'ytsearch:{query}'
 
                 results = await player.node.get_tracks(query)
+                if not results or not results['tracks']:
+                    return await ctx.send('Nothing found!')
+                embed = discord.Embed(color=discord.Color.blurple())
+
+                if results['loadType'] == 'PLAYLIST_LOADED':
+                    tracks = results['tracks']
+
+                    for track in tracks:
+                        # Add all of the tracks from the playlist to the queue.
+                        player.add(requester=ctx.author.id, track=track)
+
+                    embed.title = 'Playlist Enqueued!'
+                    embed.description = f'{results["playlistInfo"]["name"]} - {len(tracks)} tracks'
+                else:
+                    track = results['tracks'][0]
+                    embed.title = 'Track Enqueued'
+                    embed.description = f'[{track["info"]["title"]}]({track["info"]["uri"]})'
+
+                    # You can attach additional information to audiotracks through kwargs, however this involves
+                    # constructing the AudioTrack class yourself.
+                    track = lavalink.models.AudioTrack(track, ctx.author.id, recommended=True)
+                    player.add(requester=ctx.author.id, track=track)
+                # embed.set_author(str(ctx.author.id),ctx.author., ctx.author.avatar_url) idk why you no work
+
+                await ctx.send(embed=embed)
+
+                if not player.is_playing:
+                    await player.play()
+                    await player.set_volume(int(90))  # bot seems to clip at default 100 volume.
+                """ old code
                 try:
                     track = results['tracks'][0]
                     player.add(requester=ctx.author.id, track=track)
@@ -58,7 +88,7 @@ class music(commands.Cog, ):
                     await ctx.channel.send(f"{track_title} added to queue.")
                 except Exception as error:
                     await ctx.channel.send("Song not found. (or title has emojis/symbols)")
-
+                """
             except Exception as error:
                 print(error)
         else:
@@ -67,7 +97,8 @@ class music(commands.Cog, ):
     async def track_hook(self, event):  # disconnects bot when song list is complete.
         if isinstance(event, lavalink.events.QueueEndEvent):
             guild_id = int(event.player.guild_id)
-            await self.connect_to(guild_id, None)
+            guild = self.bot.get_guild(guild_id)
+            await guild.change_voice_state(channel=None)
 
     async def connect_to(self, guild_id: int, channel_id: str):
         ws = self.bot._connection._get_websocket(guild_id)
@@ -114,7 +145,7 @@ class music(commands.Cog, ):
     async def set_volume(self, ctx, volume: int = None):
         player = self.bot.music.player_manager.get(ctx.guild.id)
         if not volume:
-            return await ctx.send(f"Current volume: {player.volume}%")#return skips running code below
+            return await ctx.send(f"Current volume: {player.volume}%")  # return skips running code below
         await player.set_volume(int(volume))
         await ctx.channel.send(f"Volume set to {volume}%")
 
@@ -122,19 +153,15 @@ class music(commands.Cog, ):
     @commands.command(name='disconnect', aliases=['dc'],
                       help="Force disconnects the bot from a voice channel")  # bad practice, better to use clear.
     async def disconnect_bot(self, ctx):
-        try:
-            player = self.bot.music.player_manager.get(ctx.guild.id)
-            if ctx.author.voice is not None and ctx.author.voice.channel.id == int(player.channel_id):
-                if not player.is_connected:
-                    await ctx.channel.send("No bot is connected.")
-                else:
-                    await ctx.channel.send("Bot disconnected.")
-                    guild_id = int(player.guild_id)
-                    await self.connect_to(guild_id, None)
-            else:
-                await ctx.channel.send("Please join the same voice channel as me.")
-        except:
-            await ctx.channel.send("Nothing playing.")
+        player = self.bot.music.player_manager.get(ctx.guild.id)
+        if not player.is_connected:
+            return await ctx.channel.send("No bot is connected.")
+        if not ctx.author.voice or (player.is_connected and ctx.author.voice.channel.id != int(player.channel_id)):
+            return await ctx.channel.send("Please join the same voice channel as me.")
+        player.queue.clear()
+        await player.stop()
+        await ctx.guild.change_voice_state(channel=None)
+        await ctx.channel.send("Bot disconnected.")
 
     @commands.command(name='pause', aliases=["ps"],
                       help="Pauses a song if one is playing.")  # command to pause currently playing music
@@ -182,7 +209,8 @@ class music(commands.Cog, ):
             await ctx.channel.send("Nothing playing.")
 
     @commands.command(name='queue', aliases=['playlist', 'songlist', 'upnext', "q"],
-                      help="Shows songs up next in order, with the currently playing at the top.")  # display the songs in the order they are waiting to play
+                      help='Shows songs up next in order, with the currently playing at the top.')
+    # display the songs in the order they are waiting to play
     async def queue(self, ctx, page=1):
         if not isinstance(page, int):  # Stop here if the page is not a valid number (save processing time).
             return ctx.channel.send("Please enter a valid number.")
@@ -201,7 +229,8 @@ class music(commands.Cog, ):
                     list_collection.append(complete_list)
                     complete_list = ''
 
-            if i % 10 != 0 or i == 0:  # Check for the case where it is not a perfect multiple, add "half page" (< 10) or if there is only one song playing
+            if i % 10 != 0 or i == 0:  # Check for the case where it is not a perfect multiple, add "half page" (<
+                # 10) or if there is only one song playing
                 list_collection.append(complete_list)
 
             selection = page - 1
@@ -240,6 +269,5 @@ class music(commands.Cog, ):
             await ctx.channel.send("Nothing playing.")
 
 
-
 def setup(bot):
-    bot.add_cog(music(bot))
+    bot.add_cog(Music(bot))

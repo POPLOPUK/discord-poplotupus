@@ -89,9 +89,9 @@ async def custom_cmds(message):
     now = datetime.now()
     current_time = now.strftime("%H:%M:%S")
     message_lower = message.content.lower()
-    if not message.channel.id == 577213129080045568:
-        print(current_time, str("#") + str(bot.get_channel(message.channel.id)),
-              str(message.author)[:-5] + ": " + str(message.content), )
+    #if not message.channel.id == 577213129080045568:
+        #print(current_time, str("#") + str(bot.get_channel(message.channel.id)),
+        #      str(message.author)[:-5] + ": " + str(message.content), )
     if message_lower == ".bestgamer":
         await message.channel.send("May")
     elif message_lower == ".bestmlg":
