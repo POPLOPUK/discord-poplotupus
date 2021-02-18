@@ -1,7 +1,6 @@
 from discord.ext import commands
 import discord
 import pickle
-import random
 import aiohttp
 import io
 
@@ -63,7 +62,7 @@ class SoundMediaCog(commands.Cog, name='media'):
                     data = io.BytesIO(await resp.read())
             await ctx.send(file=discord.File(data, (name + ".mp3")))
         except KeyError:
-            msg = "There is not file with that sound"
+            await ctx.send("There is no sound with that name")
 
     @commands.command(name="listsound", help="Displays all the sounds made by --jason-- everyone", parent="drawings")
     async def display_all_media(self, ctx):
@@ -78,6 +77,7 @@ class SoundMediaCog(commands.Cog, name='media'):
             await ctx.send(msg)
         except KeyError:
             await ctx.send("That media does not exist")
+
 
 def setup(bot):
     bot.add_cog(SoundMediaCog(bot))
