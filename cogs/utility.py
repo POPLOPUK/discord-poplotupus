@@ -2,8 +2,8 @@ from discord.ext import commands
 
 
 def botcommandscheck(m):
-    commands = ["$w", "$im", "$k", "$wl", "$h", ".reboot", ".help", "$mu", "$mm", "$wa", "$ha", "$dk", "$daily",
-                "$rolls", "$wishlist", "y", "$ts", "$trade", "$give"]
+    botcommands = ["$w", "$im", "$k", "$wl", "$h", ".reboot", ".help", "$mu", "$mm", "$wa", "$ha", "$dk", "$daily",
+                   "$rolls", "$wishlist", "y", "$ts", "$trade", "$give"]
     if int(m.author.id) == 432610292342587392:
         if m.content.lower().find("married") >= 0:
             return False
@@ -18,7 +18,7 @@ def botcommandscheck(m):
         return True
     elif int(m.author.id) == 705016654341472327:
         return True
-    elif str(m.content.lower()) in commands:
+    elif str(m.content.lower()) in botcommands:
         return True
     elif str(m.content.lower()).find("$im") >= 0:
         return True
