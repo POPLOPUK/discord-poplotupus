@@ -12,7 +12,7 @@ Implemented bit of code from: https://github.com/Devoxin/Lavalink.py/blob/master
 """
 
 
-class Music(commands.Cog, ):
+class Music(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
