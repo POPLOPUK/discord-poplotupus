@@ -146,6 +146,10 @@ class Music(commands.Cog):
         player = self.bot.music.player_manager.get(ctx.guild.id)
         if not volume:
             return await ctx.send(f"Current volume: {player.volume}%")  # return skips running code below
+        if volume >= 200:
+            if ctx.author.id != 178876861542039553:
+                volume = 200
+
         await player.set_volume(int(volume))
         await ctx.channel.send(f"Volume set to {volume}%")
 
