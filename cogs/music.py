@@ -98,7 +98,7 @@ class Music(commands.Cog):
         if isinstance(event, lavalink.events.QueueEndEvent):
             guild_id = int(event.player.guild_id)
             guild = self.bot.get_guild(guild_id)
-            await guild.change_voice_state(channel=None)
+            await self.connect_to(guild_id, None)
 
     async def connect_to(self, guild_id: int, channel_id: str):
         ws = self.bot._connection._get_websocket(guild_id)
@@ -164,7 +164,8 @@ class Music(commands.Cog):
             return await ctx.channel.send("Please join the same voice channel as me.")
         player.queue.clear()
         await player.stop()
-        await ctx.guild.change_voice_state(channel=None)
+        guild_id = int(player.guild_id)
+        await self.connect_to(guild_id, None)
         await ctx.channel.send("Bot disconnected.")
 
     @commands.command(name='pause', aliases=["ps"],
